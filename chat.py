@@ -20,19 +20,25 @@ WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, _input_
 
 
 def get_chat_response(prompt):
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, _clear_button)))
+    clear_button = driver.find_element(By.XPATH, _clear_button)
+    clear_button.click()
+
+    time.sleep(3)
+
+    WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, "bot-row")))
+
     input_element = driver.find_element(By.XPATH, _input_element)
     input_element.send_keys(prompt + Keys.RETURN)
     time.sleep(1)
+
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "bot-row")))
 
     response = ""
-    while response != driver.find_element(By.CLASS_NAME, "bot-row").text:
+    while response != driver.find_element(By.CLASS_NAME, "bot-row").text or response == "":
         response = driver.find_element(By.CLASS_NAME, "bot-row").text
-        time.sleep(0.5)
+        time.sleep(0.7)
 
-    clear_button = driver.find_element(By.XPATH, _clear_button)
-    clear_button.click()
-    time.sleep(0.8)
     return response
 
 

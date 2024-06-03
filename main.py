@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi import Body
+from fastapi import Body, Request
 import asyncio
 from chat import get_chat_response, close_chat
 
@@ -14,6 +14,8 @@ async def root():
 
 
 @app.post("/get_response")
-async def get_response(prompt: str = Body(...)):
+async def get_response(request: Request):
     async with processing_lock:
-        return get_chat_response(prompt)
+        prompt = await request.body()
+        prompt_str = prompt.decode('utf-8')
+        return get_chat_response(prompt_str)
