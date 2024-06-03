@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi import Body
+import asyncio
+from chat import get_chat_response, close_chat
 
 app = FastAPI()
+
+processing_lock = asyncio.Lock()
 
 
 @app.get("/")
@@ -11,4 +15,5 @@ async def root():
 
 @app.post("/get_response")
 async def get_response(prompt: str = Body(...)):
-    return {"response": "This is a response to the prompt: " + prompt}
+    async with processing_lock:
+        return get_chat_response(prompt)

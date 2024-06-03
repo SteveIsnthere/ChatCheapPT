@@ -12,7 +12,6 @@ service = Service(executable_path="chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 driver.get('https://127.0.0.1:40000/?__theme=dark')
 
-
 # element xpath
 _input_element = "/html/body/gradio-app/div/div/div[1]/div/div/div[7]/div[4]/div/div/div/div/div/div[1]/label/textarea"
 _clear_button = "/html/body/gradio-app/div/div/div[1]/div/div/div[7]/div[5]/button[3]"
@@ -20,7 +19,7 @@ _clear_button = "/html/body/gradio-app/div/div/div[1]/div/div/div[7]/div[5]/butt
 WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, _input_element)))
 
 
-def get_response(prompt):
+def get_chat_response(prompt):
     input_element = driver.find_element(By.XPATH, _input_element)
     input_element.send_keys(prompt + Keys.RETURN)
     time.sleep(1)
@@ -31,14 +30,11 @@ def get_response(prompt):
         response = driver.find_element(By.CLASS_NAME, "bot-row").text
         time.sleep(0.5)
 
-    print(response)
-
     clear_button = driver.find_element(By.XPATH, _clear_button)
     clear_button.click()
     time.sleep(0.8)
+    return response
 
 
-get_response("write a 700 words essay about ai")
-get_response("do you know who i am?")
-
-driver.quit()
+def close_chat():
+    driver.quit()
