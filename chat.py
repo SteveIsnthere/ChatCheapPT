@@ -7,12 +7,38 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 import os
+import json
 
 # context file path
 if not os.path.exists("data"):
     os.makedirs("data")
 
 file_path = "data/context.txt"
+
+# usage tracking
+usage_file_name = 'usage.json'
+initial_data = {
+    "read": 0,
+    "write": 0
+}
+if not os.path.exists(usage_file_name):
+    with open(usage_file_name, 'w') as json_file:
+        json.dump(initial_data, json_file, indent=4)
+
+
+def increment_counters(read_increment=0, write_increment=0):
+    # Load the existing data
+    with open(usage_file_name, 'r') as json_file:
+        data = json.load(json_file)
+
+    # Increment the values
+    data['read'] += read_increment / 4
+    data['write'] += write_increment / 4
+
+    # Save the updated data back to the file
+    with open(usage_file_name, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+
 
 # Initialize the Chrome WebDriver
 service = Service(executable_path="chromedriver.exe")
@@ -51,6 +77,8 @@ def get_chat_response(prompt):
         response = driver.find_element(By.CLASS_NAME, "bot-row").text
         time.sleep(0.7)
 
+    increment_counters(len(prompt), len(response))
+
     return response
 
 
@@ -86,6 +114,8 @@ def get_chat_response_with_context(prompt, context):
     context_refresh_button = driver.find_element(By.XPATH, _context_refresh_button)
     context_refresh_button.click()
     time.sleep(1)
+
+    increment_counters(len(prompt), len(response))
 
     return response
 
