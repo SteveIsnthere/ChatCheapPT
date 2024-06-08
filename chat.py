@@ -83,7 +83,7 @@ def get_chat_response(prompt):
 
 
 def get_chat_response_with_context(prompt, context):
-    with open(file_path, 'w') as file:
+    with open(file_path, 'w', encoding='utf-8') as file:
         file.write(context)
 
     time.sleep(3)
